@@ -1,1 +1,1 @@
-My do hard things push
+My do hard things push on shell permissions
