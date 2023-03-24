@@ -73,9 +73,6 @@ Notice: Compiled catalog for 6712bef7a528.ec2.internal in environment production
 Notice: /Stage[main]/Main/File[holberton]/ensure: defined content as '{md5}f1b70c2a42a98d82224986a612400db9'
 Notice: Finished catalog run in 0.03 seconds
 root@6712bef7a528:~#
-root@6712bef7a528:~# ls -l /tmp/holberton
--rwxr--r-- 1 www-data www-data 13 Mar 19 23:12 /tmp/holberton
-root@6712bef7a528:~# cat /tmp/holberton
 I love Puppetroot@6712bef7a528:~#
 ```
 
@@ -137,4 +134,4 @@ root@d391259bf577:/#
 ---
 
 ## Author
-* **Robinson Montes** - [mecomonteshbtn](https://github.com/mecomonteshbtn)
+* **Richard okello**
