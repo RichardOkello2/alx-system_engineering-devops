@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
 # Automatizing the nginx configuration
-
 sudo apt-get -y update
 sudo apt-get -y install nginx
-sudo sed -i "15i \\\tadd_header X-Served-By $(hostname);" /etc/nginx/nginx.conf
+sudo sed -i "15i \\\tadd_header X-Served-By 96774-web-02;" /etc/nginx/nginx.conf
 sudo service nginx restart
 
-# configure web-02 to be identical to web-01
-ssh 18.204.3.55 'bash -s' < 0-custom_http_response_header
 
