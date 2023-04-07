@@ -1,44 +1,21 @@
-#!/usr/bin/env bash 
+#!/bin/bash
 
-# Script to report information about server domains 
+domain="$1"
+subdomain="$2"
 
-# Disable shellcheck for line SC2086 (see https://github.com/koalaman/shellcheck/wiki/SC2086)
-# This is because we are intentionally using a space-separated list of subdomains
-# and shellcheck will flag it as an error
-# shellcheck disable=SC2086 
+if [[ -z "$subdomain" ]]; then
+  # Display information for default subdomains
+  subdomains=("www" "lb-01" "web-01" "web-02")
+else
+  # Display information for specified subdomain
+  subdomains=("$subdomain")
+fi
 
-check_domain() { 
-    # Set space-separated list of subdomains
-    SUBDOMAINS='www lb-01 web-01 web-02' 
-  
-    if [ -z "$1" ]; then 
-        exit 
-    fi 
-
-    # If no subdomain specified, do all
-    if [ -z "$2" ]; then 
-        # Loop through each subdomain in the list
-        echo "$SUBDOMAINS" | awk -v domain="$1" \
-        'BEGIN { RS=" " } 
-        {
-            split($0, ARR, " ");
-            cmd = "dig " ARR[1] "." domain " | grep -A1 \"ANSWER SECTION:\" | tail -n1";
-            system(cmd);
-            close(cmd);
-        }' | awk \
-        '{ 
-            split($0, DOMS, ".");
-            print "The subdomain " DOMS[1] " is a " $4 " record and points to " $5;
-        }'
-    else 
-        # Get information for specified subdomain
-        dig "$2.$1" | grep -A1 "ANSWER SECTION:" | tail -n1 | awk \
-        '{ 
-            split($0, DOMS, ".");
-            print "The subdomain " DOMS[1] " is a " $4 " record and points to " $5;
-        }'
-    fi 
-} 
-
-# Call the check_domain function with the first and second command line arguments
-check_domain "$1" "$2"
+for subdomain in "${subdomains[@]}"; do
+  record=$(dig +short "$subdomain.$domain")
+  if [[ -n "$record" ]]; then
+    echo "The subdomain $subdomain.$domain is a $(dig +short -t "$record" "$subdomain.$domain") record and points to $record"
+  else
+    echo "The subdomain $subdomain.$domain does not exist"
+  fi
+done
