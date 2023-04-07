@@ -1,26 +1,44 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 
-# This script accepts two arguments, domain and subdomain (optional),
-# and displays information about the subdomain's DNS record.
-# If only domain is provided, it displays information about the subdomains
-# www, lb-01, web-01, and web-02.
+# Script to report information about server domains 
 
-# Disable SC2086 warning for echo statements with variables
-# shellcheck disable=SC2086
+# Disable shellcheck for line SC2086 (see https://github.com/koalaman/shellcheck/wiki/SC2086)
+# This is because we are intentionally using a space-separated list of subdomains
+# and shellcheck will flag it as an error
+# shellcheck disable=SC2086 
 
-display_dns_info() {
-    local domain="$1"
-    local subdomain="$2"
+check_domain() { 
+    # Set space-separated list of subdomains
+    SUBDOMAINS='www lb-01 web-01 web-02' 
+  
+    if [ -z "$1" ]; then 
+        exit 
+    fi 
 
-    if [[ -z "$subdomain" ]]; then
-        subdomain="www lb-01 web-01 web-02"
-    fi
+    # If no subdomain specified, do all
+    if [ -z "$2" ]; then 
+        # Loop through each subdomain in the list
+        echo "$SUBDOMAINS" | awk -v domain="$1" \
+        'BEGIN { RS=" " } 
+        {
+            split($0, ARR, " ");
+            cmd = "dig " ARR[1] "." domain " | grep -A1 \"ANSWER SECTION:\" | tail -n1";
+            system(cmd);
+            close(cmd);
+        }' | awk \
+        '{ 
+            split($0, DOMS, ".");
+            print "The subdomain " DOMS[1] " is a " $4 " record and points to " $5;
+        }'
+    else 
+        # Get information for specified subdomain
+        dig "$2.$1" | grep -A1 "ANSWER SECTION:" | tail -n1 | awk \
+        '{ 
+            split($0, DOMS, ".");
+            print "The subdomain " DOMS[1] " is a " $4 " record and points to " $5;
+        }'
+    fi 
+} 
 
-    for sub in $subdomain; do
-        record_type=$(dig +short "$sub"."$domain" | awk '{print $2}')
-        dest=$(dig +short "$sub"."$domain")
-        echo "The subdomain $sub is a $record_type record and points to $dest"
-    done
-}
-
-display_dns_info "$1" "$2"
+# Call the check_domain function with the first and second command line arguments
+check_domain "$1" "$2"
