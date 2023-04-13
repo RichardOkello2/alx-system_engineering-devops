@@ -1,4 +1,4 @@
-# school server config options
-Host 98.98.98.98
+
+Host *
     IdentityFile ~/.ssh/school
-    Protocol 2
+    PasswordAuthentication no
