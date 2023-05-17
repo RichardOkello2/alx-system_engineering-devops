@@ -94,4 +94,4 @@ Among the litany of data your monitoring service can report to you are system me
 ---
 
 ## Author
-* **Robinson Montes** - [mecomonteshbtn](https://github.com/mecomonteshbtn)
+* **Richard Okello**
